@@ -4,15 +4,15 @@ Project Acronym: MCP-K8
 
 ## Introduction
 
-The case study aims to integrate `kubernetes-mcp-server` into a sample Kubernetes application
+The case study aims to integrate [kubernetes-mcp-server](https://github.com/containers/kubernetes-mcp-server) into a sample Kubernetes application
 with non-trivial architecture and demonstrate how LLM can modify cluster configuration and deployment.
 Interactions between language model and the K8s runtime should be monitored by Grafana.
 
 For our sample application, we chose [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/).
-The application is It is designed to serve as a Docker / Kubernetes deployment example. It showcases a modern
+The application is designed to serve as a Docker / Kubernetes deployment example. It showcases a modern
 implementation of an online store, with separate microservices for, among other things, product catalog, cart,
 payments, reviews, recommendations and provides both web UI and mobile appliation. It also contains some
-quality-of-life features for our usecase, like load generator.
+quality-of-life features for our use-case, like load generator.
 
 ## Technology stack
 
