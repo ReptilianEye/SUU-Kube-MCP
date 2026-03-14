@@ -2,8 +2,6 @@
 
 Project Acronym: MCP-K8
 
-> **Note** (per Cel i Organizacja Projektu): Project goal—group of four students; independent case study with emphasis on AI for management, observability, and visualization. Project documentation—report must follow the structure below. Project repository—GitHub repo with all elements and documentation; resources: own hardware or free accounts (Grafana Cloud, AWS, GCE, Azure).
-
 ---
 
 ## Contents
