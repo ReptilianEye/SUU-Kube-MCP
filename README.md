@@ -33,30 +33,36 @@ For our sample application, we chose [OpenTelemetry Demo Project](https://opente
 The application stack is dictated by the implementation of [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/):
 
 - **OpenTelemetry** – Collection and export of traces, metrics, and logs from application services via OTLP.
-- **Prometheus** – Time-series metrics storage; collects from services and the OpenTelemetry Collector.
+- **Prometheus** – Time-series metrics storage; collects information from services and the OpenTelemetry Collector.
 - **OpenSearch** – Log storage and search; receives logs from the OpenTelemetry Collector.
 - **Jaeger** – Distributed tracing backend.
-- **Grafana** – Visualization; reads from Prometheus, OpenSearch, and Jaeger (no direct collection).
+- **Grafana** – Visualization; reads from Prometheus, OpenSearch, and Jaeger.
 - **Kubernetes** – Orchestration of the demo application.
 - **kubernetes-mcp-server** – Interface between the Kubernetes cluster and the language model.
 
-### How telemetry reaches Grafana
-
-| Telemetry type | Flow | Storage | Grafana datasource |
-|----------------|------|---------|--------------------|
-| **Logs** | Application services → OpenTelemetry Collector (OTLP) → **OpenSearch** | OpenSearch (indexes `otel-logs-*`) | OpenSearch |
-| **Metrics** | Application services → OpenTelemetry Collector (OTLP) **or** Prometheus (scraping `/metrics`) | **Prometheus** | Prometheus |
-| **Traces** | Application services → OpenTelemetry Collector → **Jaeger** | Jaeger | Jaeger |
-
-**Logs in detail:** Each microservice emits logs using the OpenTelemetry SDK. Logs are sent over OTLP to the OpenTelemetry Collector, which exports them to OpenSearch. Grafana connects to OpenSearch as a datasource and runs queries to retrieve logs for dashboards and explore views.
+**Logs in Grafana:** Application services emit logs via the OpenTelemetry SDK. The OpenTelemetry Collector receives them (OTLP) and exports to OpenSearch. Grafana connects to OpenSearch as a datasource and displays logs in dashboards and Explore.
 
 ---
 
 ## 3. Case study concept description
 
-- **Application:** Microservices-based online store (OpenTelemetry Demo); each service is instrumented with OpenTelemetry SDK.
-- **Observability:** Telemetry (logs, metrics, traces) is collected by the OpenTelemetry Collector and stored in OpenSearch, Prometheus, and Jaeger.
-- **Visualization:** Grafana reads from these backends and provides dashboards and explore views for monitoring the application and LLM–Kubernetes interactions.
+The core of this case study is **updating Kubernetes configuration using the Kubernetes MCP server**, integrated with Claude Code or Cursor IDE. Through the chat, you can diagnose issues, observe the application, and scale it up—all driven by natural language prompts.
+
+### Connecting the Kubernetes MCP to Cursor IDE or Claude Code
+
+1. **Add the Kubernetes MCP server** to your IDE’s MCP configuration (e.g. Cursor Settings → Tools & MCP, or `.cursor/mcp.json` / Claude Code MCP config). Use the [kubernetes-mcp-server](https://github.com/containers/kubernetes-mcp-server) configuration from its documentation.
+2. **Prerequisites:** Ensure `kubectl` is installed and a cluster is running (e.g. Minikube). The MCP server uses your default kubeconfig (`~/.kube/config`) and current context.
+3. **Restart the IDE** so it picks up the new MCP server. The AI assistant can then use the server’s tools to work with the cluster.
+
+### Using the chat to diagnose, observe, and scale up
+
+Once connected, you can use the chat to:
+
+- **Diagnose** – e.g. “List pods in the default namespace”, “Describe the frontend deployment”, “Show recent events for failing pods”. The assistant uses MCP tools to run equivalent `kubectl` commands and interpret the output.
+- **Observe** – e.g. “How many replicas are running for each deployment?”. You can cross-check with Grafana dashboards (http://localhost:8080/grafana) for metrics and logs.
+- **Scale up** – e.g. “Scale the frontend deployment to 3 replicas” or “Scale up the cart service”. The assistant uses MCP tools to update the deployment configuration.
+
+All changes made via the MCP server are reflected in the cluster and can be verified in Grafana.
 
 ---
 
