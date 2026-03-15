@@ -32,9 +32,9 @@ For our sample application, we chose [OpenTelemetry Demo Project](https://opente
 
 The application stack is dictated by the implementation of [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/):
 
-- **OpenTelemetry** – Collection and export of traces, metrics, and logs from application services via OTLP.
-- **Prometheus** – Time-series metrics storage; collects information from services and the OpenTelemetry Collector.
-- **OpenSearch** – Log storage and search; receives logs from the OpenTelemetry Collector.
+- **OpenTelemetry** – Acts as the foundation of modern observability, providing a unified standard and a set of tools to generate and transmit telemetry data (logs, metrics, and traces). By utilizing the OTLP (OpenTelemetry Protocol) and the Collector component, the project enables seamless integration of services written in various programming languages. In this demo, it serves as the "central nervous system" that aggregates data from microservices and routes it to the appropriate backend systems.
+- **Prometheus** – Collects performance metrics from both the Kubernetes infrastructure layer and directly from application business logic via pull mechanisms or OpenTelemetry Collector integration. It allows for precise tracking of resource utilization (CPU, RAM) and application-specific indicators, which is critical for the LLM's decision-making process during scaling operations.
+- **OpenSearch** – Stores structured text data received from the collector, enabling rapid indexing and searching. Through Grafana integration, it allows users and AI agents to correlate log errors with metric anomalies, significantly accelerating root cause analysis in a distributed microservices environment.
 - **Jaeger** – Distributed tracing backend.
 - **Grafana** – Visualization; reads from Prometheus, OpenSearch, and Jaeger.
 - **Kubernetes** – Orchestration of the demo application.
@@ -100,9 +100,11 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
 ### a. Configuration set-up
 
 1. Start Minikube with sufficient resources:
+
    ```bash
    minikube start --memory=8192 --cpus=4
    ```
+
    or with max resources:
 
    ```bash
