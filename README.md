@@ -112,8 +112,15 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
 2. Deploy the OpenTelemetry Demo:
 
    ```bash
-   kubectl apply -f opentelemetry-demo/kubernetes/opentelemetry-demo.yaml
+   kubectl create -n otel-demo -f opentelemetry-demo/kubernetes/opentelemetry-demo.yaml
    ```
+
+3. Enable `kube-state-metrics` service (for grafana k8s monitoring):
+
+   ```bash
+   kubectl apply -n otel-demo -f kube-metrics/
+   ```
+   Later you can import [this dashboard](https://grafana.com/grafana/dashboards/15661-k8s-dashboard-en-20250125/) in grafana (copying ID is the simplest way).
 
 ### b. Data preparation
 
