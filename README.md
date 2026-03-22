@@ -32,13 +32,20 @@ For our sample application, we chose [OpenTelemetry Demo Project](https://opente
 
 The application stack is dictated by the implementation of [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/):
 
-- **OpenTelemetry** – Acts as the foundation of modern observability, providing a unified standard and a set of tools to generate and transmit telemetry data (logs, metrics, and traces). By utilizing the OTLP (OpenTelemetry Protocol) and the Collector component, the project enables seamless integration of services written in various programming languages. In this demo, it serves as the "central nervous system" that aggregates data from microservices and routes it to the appropriate backend systems.
-- **Prometheus** – Collects performance metrics from both the Kubernetes infrastructure layer and directly from application business logic via pull mechanisms or OpenTelemetry Collector integration. It allows for precise tracking of resource utilization (CPU, RAM) and application-specific indicators, which is critical for the LLM's decision-making process during scaling operations.
-- **OpenSearch** – Stores structured text data received from the collector, enabling rapid indexing and searching. Through Grafana integration, it allows users and AI agents to correlate log errors with metric anomalies, significantly accelerating root cause analysis in a distributed microservices environment.
-- **Jaeger** – Distributed tracing backend.
-- **Grafana** – Visualization; reads from Prometheus, OpenSearch, and Jaeger.
-- **Kubernetes** – Orchestration of the demo application.
-- **kubernetes-mcp-server** – Interface between the Kubernetes cluster and the language model.
+### OpenTelemetry
+Acts as the foundation of modern observability, providing a unified standard and a set of tools to generate and transmit telemetry data (logs, metrics, and traces). By utilizing the OTLP (OpenTelemetry Protocol) and the Collector component, the project enables seamless integration of services written in various programming languages. In this demo, it serves as the "central nervous system" that aggregates data from microservices and routes it to the appropriate backend systems.
+### Prometheus
+Collects performance metrics from both the Kubernetes infrastructure layer and directly from application business logic via pull mechanisms or OpenTelemetry Collector integration. It allows for precise tracking of resource utilization (CPU, RAM) and application-specific indicators, which is critical for the LLM's decision-making process during scaling operations.
+### OpenSearch
+Stores structured text data received from the collector, enabling rapid indexing and searching. Through Grafana integration, it allows users and AI agents to correlate log errors with metric anomalies, significantly accelerating root cause analysis in a distributed microservices environment.
+### Jaeger 
+Handles distributed tracing in microservice-based systems. It makes it possible to follow requests across multiple services and helps identify latency issues, failed calls, and dependencies between components. In the OpenTelemetry Demo environment, this allows end-to-end request flows to be inspected more easily.
+### Grafana
+Provides a unified interface for visualizing and exploring observability data such as metrics, logs, and traces. By integrating multiple data sources, it supports both dashboard-based monitoring and ad hoc analysis. This makes it a convenient entry point for observing telemetry collected across the environment.
+### Kubernetes 
+Enables automated deployment, management, and scaling of containerized applications. It supports service orchestration, workload recovery, and resource control, which makes it well suited to microservice-based environments. In this case, it provides the runtime layer for the demo application and the supporting observability components.
+### kubernetes-mcp-server
+Serves as a bridge between the language model and the Kubernetes cluster. It gives AI assistants structured access to cluster resources and makes it possible to inspect the environment or perform selected operations through MCP-compatible tools. As a result, cluster interaction can be performed through natural-language prompts rather than through dashboards or manual command-line operations.
 
 **Logs in Grafana:** Application services emit logs via the OpenTelemetry SDK. The OpenTelemetry Collector receives them (OTLP) and exports to OpenSearch. Grafana connects to OpenSearch as a datasource and displays logs in dashboards and Explore.
 
@@ -155,6 +162,8 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
 ## 11. References
 
 - [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/)
+- [Jaeger](https://www.jaegertracing.io/docs/latest/)
+- [Grafana](https://grafana.com/docs/grafana/latest/)
+- [Kubernetes](https://kubernetes.io/docs/home/)
 - [kubernetes-mcp-server](https://github.com/containers/kubernetes-mcp-server)
-- [Grafana](https://grafana.com/)
 - [Prometheus](https://prometheus.io/)
