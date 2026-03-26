@@ -67,7 +67,7 @@ Once connected, you can use the chat to:
 
 - **Diagnose** – e.g. “List pods in the default namespace”, “Describe the frontend deployment”, “Show recent events for failing pods”. The assistant uses MCP tools to run equivalent `kubectl` commands and interpret the output.
 - **Observe** – e.g. “How many replicas are running for each deployment?”. You can cross-check with Grafana dashboards (http://localhost:8080/grafana) for metrics and logs.
-- **Scale up** – e.g. “Scale the frontend deployment to 3 replicas” or “Scale up the cart service”. The assistant uses MCP tools to update the deployment configuration.
+- **Scale up** – e.g. “Scale the frontend deployment to 3 replicas” or “Scale up the cart service”. The assistant should use the **Kubernetes MCP** scaling tools (for example `kubectl_scale` on the deployment), not ad hoc `kubectl scale` in a terminal, so scaling stays part of the MCP-driven workflow and matches the case study.
 
 All changes made via the MCP server are reflected in the cluster and can be verified in Grafana.
 
