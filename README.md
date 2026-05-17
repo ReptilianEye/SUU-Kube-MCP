@@ -105,8 +105,6 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
 
 ## 8. Demo deployment steps
 
-### a. Configuration set-up
-
 1. Ensure that Docker is running.
 
    Minikube requires a container or virtual machine driver to start the Kubernetes cluster. In this setup, Docker is used as the Minikube driver, so Docker Desktop should be running before starting Minikube.
@@ -136,22 +134,11 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
    ```
    Later you can import [this dashboard](https://grafana.com/grafana/dashboards/15661-k8s-dashboard-en-20250125/) in grafana (copying ID is the simplest way).
 
-### b. Data preparation
-
-The demo does not require a manually prepared dataset. Telemetry data is generated automatically by the OpenTelemetry Demo application after deployment.
-
-The deployed microservices emit logs, metrics, and traces through the OpenTelemetry SDK. The built-in `load-generator` continuously produces sample traffic for the online store, so Grafana can display changing observability data during the demo.
-
-Before continuing with the demo scenario, wait until the application and observability components are ready:
-
-```bash
-kubectl get pods -n otel-demo -w
-```
-On the first run, pulling container images and starting all services can take approximately **5–20 minutes**, depending on the machine and network connection. Most pods should eventually reach the Running status.
-
 ---
 
 ## 9. Demo description
+
+The deployed microservices emit logs, metrics, and traces through the OpenTelemetry SDK. The built-in `load-generator` continuously produces sample traffic for the online store, so Grafana can display changing observability data during the demo.
 
 ### a. Execution procedure
 
@@ -164,6 +151,8 @@ Before starting the demo scenario, verify that the application and observability
 ```bash
 kubectl get pods -n otel-demo
 ```
+
+On the first run, pulling container images and starting all services can take approximately **5–20 minutes**, depending on the machine and network connection. Most pods should eventually reach the Running status.
 
 Expected result:
 
