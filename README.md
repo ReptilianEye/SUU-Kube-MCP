@@ -134,52 +134,56 @@ The demo deploys application microservices (frontend, cart, payment, etc.), the 
    ```
    Later you can import [this dashboard](https://grafana.com/grafana/dashboards/15661-k8s-dashboard-en-20250125/) in grafana (copying ID is the simplest way).
 
+5. Before starting the demo scenario, verify that the application and observability components are running:
+
+   ```bash
+   kubectl get pods -n otel-demo
+   ```
+
+   On the first run, pulling container images and starting all services can take approximately **5–20 minutes**, depending on the machine and network connection. Most pods should eventually reach the Running status.
+
+   Expected result:
+
+   - All required pods should be in the `Running` status.
+   - The output should include application pods such as `frontend-*`, `cart-*`, `checkout-*`, and `product-catalog-*`.
+   - Observability-related pods such as `grafana-*`, `prometheus-*`, `opensearch-*`, and `otel-collector-*` should also be present.
+
+   Pod names contain generated suffixes, so exact names will differ between deployments.
+
+6. Start port forwarding
+
+   ```bash
+   kubectl port-forward svc/frontend-proxy 8080:8080 -n otel-demo
+   ```
+7. Configure `kubernetes-mcp-server` for your IDE.
+   
+   In this project Cursor CLI was used to present the MCP server capabilities. 
+   In `~/.cursor/mcp.json` paste:
+   ```json
+   {
+   "mcpServers": {
+      "kubernetes-mcp-server": {
+         "command": "npx",
+         "args": ["-y", "kubernetes-mcp-server@latest"]
+      }
+   }
+   }
+   ```
+
 ---
 
-## 9. Demo description
+## 9. Demo
 
-The deployed microservices emit logs, metrics, and traces through the OpenTelemetry SDK. The built-in `load-generator` continuously produces sample traffic for the online store, so Grafana can display changing observability data during the demo.
+This section presents the MCP-K8 demo executed after completing the deployment and preparation steps from section 8. At this point, the Minikube cluster should be running, the OpenTelemetry Demo should be deployed in the `otel-demo` namespace, the required pods should be ready, application exposed via port forwarding and MCP server hooked up to the IDE.
 
-### a. Execution procedure
+### All pods running after deployment
+![all pods](docs/screenshots/all_pods.png)
 
-This section describes the MCP-K8 demo scenario executed after completing the deployment and preparation steps from section 8. At this point, the Minikube cluster should be running, the OpenTelemetry Demo should be deployed in the `otel-demo` namespace, and the required pods should be ready.
+### All services running after deployment
+![all services](docs/screenshots/all_services.png)
 
-#### Step 1: Verify that the environment is deployed
 
-Before starting the demo scenario, verify that the application and observability components are running:
-
-```bash
-kubectl get pods -n otel-demo
-```
-
-On the first run, pulling container images and starting all services can take approximately **5–20 minutes**, depending on the machine and network connection. Most pods should eventually reach the Running status.
-
-Expected result:
-
-- All required pods should be in the `Running` status.
-- The output should include application pods such as `frontend-*`, `cart-*`, `checkout-*`, and `product-catalog-*`.
-- Observability-related pods such as `grafana-*`, `prometheus-*`, `opensearch-*`, and `otel-collector-*` should also be present.
-
-Pod names contain generated suffixes, so exact names will differ between deployments.
-
-#### Step 2: Start port-forwarding
-
-In a separate terminal window, start port-forwarding for the `frontend-proxy` service:
-
-```bash
-kubectl port-forward svc/frontend-proxy 8080:8080 -n otel-demo
-```
-
-This terminal must remain open during the demo, because it provides local access to the web store and Grafana.
-
-Expected result:
-
-```text
-Forwarding from 127.0.0.1:8080 -> 8080
-Forwarding from [::1]:8080 -> 8080
-```
-
-#### Step 3: Verify local access
+### Accessing web application
 
 Open the web store in a browser:
 
@@ -187,57 +191,20 @@ Open the web store in a browser:
 http://localhost:8080/
 ```
 
+![web app](docs/screenshots/web_app.png)
+
+### Accessing Grafana
+
 Open Grafana in a browser:
 
 ```text
 http://localhost:8080/grafana/
 ```
 
-Expected result:
+![grafana](docs/screenshots/grafana.png)
 
-- The Astronomy Shop web UI should be available at `http://localhost:8080/`.
-- Grafana should be available at `http://localhost:8080/grafana/`.
-
-#### Step 4: List pods through MCP in Cursor IDE
-
-Prerequisite: `kubernetes-mcp-server` must be configured in Cursor IDE under **Cursor Settings → Tools & MCP**. The MCP server should use the current Kubernetes context, which points to the local Minikube cluster.
-
-In the Cursor IDE MCP chat, use the following prompt:
-
-```text
-List all pods in the otel-demo namespace
-```
-
-Expected result:
-
-- The MCP server should return a list of pods from the `otel-demo` namespace.
-- Pod names and statuses should be visible in the response.
-- The response should include application pods such as `frontend-*`, `cart-*`, `checkout-*`, and `product-catalog-*`.
-- Observability-related pods such as `grafana-*`, `prometheus-*`, `jaeger-*`, `opensearch-*`, and `otel-collector-*` should also be present.
-
-#### Step 5: List services through MCP in Cursor IDE
-
-In the Cursor IDE MCP chat, use the following prompt:
-
-```text
-List all services in the otel-demo namespace
-```
-
-Expected result:
-
-- The MCP server should return a list of services from the `otel-demo` namespace.
-- Service names and exposed ports should be visible in the response.
-- The response should include `frontend-proxy`.
-- The `frontend-proxy` service should expose port `8080`.
-- Other expected services include application services such as `frontend`, `cart`, `checkout`, `payment`, and `product-catalog`, as well as observability services such as `grafana`, `prometheus`, `jaeger`, `opensearch`, and `otel-collector`.
-
-#### Step 6: Open Grafana and import Kubernetes dashboard
-
-Navigate to Grafana:
-
-```text
-http://localhost:8080/grafana/
-```
+### Importing K8S Dashboard
+In Grafana:
 
 Import the Kubernetes dashboard:
 
@@ -253,88 +220,63 @@ Import the Kubernetes dashboard:
 5. Select the appropriate Prometheus data source.
 6. Click **Import**.
 
-After importing the dashboard, verify that it displays Kubernetes cluster metrics such as workload count, pod count, and node count.
 
-Record the baseline pod count before scaling. This value will be compared with the pod count after scaling the `frontend` deployment.
+![dashboard](docs/screenshots/dashboard.png)
 
-The total pod count may differ depending on the OpenTelemetry Demo version and the current cluster state. The baseline deployment is expected to start with approximately one replica per deployment.
+### Listing all Kubernetes pods via MCP
 
-#### Step 7: Scale the frontend deployment through MCP
+Prompt used:
+
+```text
+List all pods in the otel-demo namespace
+```
+![getting pods via mcp](docs/screenshots/get_pods_mcp.png)
+
+After quick verification we can see that Cursor is making a small mistake - it states that there are 25 pods when actually there are 26. When we count every pod returned by Cursor we can see that it returned 26 pods so it proves that the MCP server works perfectly, and the discrepancy was solely due to a minor counting mistake by the LLM itself.
+
+Clarified it with prompt:
+```text
+I can count 26 not 25 pods - why did you say 25?
+```
+
+![prompt about ai mistake with counting pods](docs/screenshots/pod_clarification.png)
+
+### Listing all Kubernetes services via MCP
+
+Prompt used:
+
+```text
+List all services in the otel-demo namespace
+```
+
+![getting all services via mcp](docs/screenshots/get_services_mcp.png)
+
+Here Cursor made no mistake.
+
+### Scaling frontend deployment through MCP
 
 The `frontend` deployment is the main Next.js Astronomy Shop UI and is used as the scaling target in this demo.
 
-In the Cursor IDE MCP chat, use the following prompt:
+Let's scale its deployment to 3 replicas.
+
+Before that let's check how many frontend pods are there.
+![grafana dashboard showing all frontend pods before scaling](docs/screenshots/frontend_before.png)
+There is only 1.
+
+Now let's ask AI Model to scale `frontend` up to 3 replicas.
+
+Prompt used:
 
 ```text
 Scale the frontend deployment in the otel-demo namespace to 3 replicas
 ```
 
-Expected result:
+![scaling frontend to 3 replicas via mcp](docs/screenshots/scale_frontend_mcp.png)
 
-- The assistant should use the Kubernetes MCP server to update the `frontend` deployment.
-- The response should confirm that the `frontend` deployment was scaled to `3` replicas.
-- Scaling should be performed through the MCP tool, not manually through a terminal command.
+As we can see Cursor not only used the `resources_scale` tool but also checked the state of the frontend pods with `pods_list_in_namespace` tool.
 
-#### Step 8: Verify the scale-up through MCP
-
-In the Cursor IDE MCP chat, use the following prompt:
-
-```text
-List pods in the otel-demo namespace
-```
-
-Expected result:
-
-- There should now be **3 running `frontend-*` pods**.
-- Other application and observability pods should remain running.
-
-Example expected result:
-
-```text
-frontend-xxxxxxxxxx-aaaaa              Running
-frontend-xxxxxxxxxx-bbbbb              Running
-frontend-xxxxxxxxxx-ccccc              Running
-```
-
-#### Step 9: Verify the scale-up in Grafana
-
-Return to Grafana:
-
-```text
-http://localhost:8080/grafana/
-```
-
-Refresh the Kubernetes dashboard.
-
-Expected result:
-
-- The panel showing pod count or replica count should reflect the increased number of frontend replicas.
-- The total pod count should increase by approximately `2`, because the `frontend` deployment was scaled from `1` replica to `3` replicas.
-
-Expected comparison:
-
-```text
-Before scaling:
-total pod count: base_val
-
-After scaling:
-total pod count: base_val + 2
-```
-
-Exact numbers may vary depending on the OpenTelemetry Demo version and cluster state.
-
-### b. Results presentation
-
-This section should be completed after executing the demo scenario described in section 9a.
-
-The final results should include screenshots and observations from:
-
-- Kubernetes pod and service listing,
-- Cursor IDE MCP chat responses,
-- Grafana Kubernetes dashboard before scaling,
-- Grafana Kubernetes dashboard after scaling.
-
-The results should clearly show that the `frontend` deployment was scaled from `1` to `3` replicas through the Kubernetes MCP server, and that the change was visible in both MCP output and Grafana.
+Coming back to Grafana dashboard we can observe new pods listed there:
+![grafana dashboard showing all frontend pods after scaling](docs/screenshots/frontend_after.png)
 
 ---
 
