@@ -280,13 +280,7 @@ Coming back to Grafana dashboard we can observe new pods listed there:
 
 ---
 
-## 10. Summary – conclusions
-
-(To be expanded in the full report.)
-
----
-
-## 11. References
+## 10. References
 
 - [OpenTelemetry Demo Project](https://opentelemetry.io/docs/demo/)
 - [Jaeger](https://www.jaegertracing.io/docs/latest/)
